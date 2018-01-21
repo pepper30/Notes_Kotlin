@@ -60,4 +60,9 @@ inner class DatabaseHelper : SQLiteOpenHelper {
         val count=sqlDb!!.delete(dbTable,selection,selectionArgs)
         return count
     }
+
+    fun update(values: ContentValues,selection: String,selectionArgs: Array<String>):Int{
+        val count=sqlDb!!.update(dbTable,values,selection,selectionArgs);
+        return count;
+    }
 }

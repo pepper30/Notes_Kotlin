@@ -24,22 +24,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        listNotes.add(Note(1,"meet prof.","9:00 am University"))
-        listNotes.add(Note(2,"meet doctor","29 dec 11:00 am hospital "))
-        listNotes.add(Note(3,"meet friend","3 jan 5:30 pm restaurant "))
-
-
-
         LoadQuery("%")
 
     }
 
+    override fun onResume(){
+        super.onResume()
+        LoadQuery("%")
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        LoadQuery("%")
+    }
     fun LoadQuery(title: String){
         val dbManager=DbManager(this)
         val selectionargs= arrayOf(title)
         val projections= arrayOf("Id","Title","Description")
         val cursor=dbManager.Query(projections,"Title LIKE ?",selectionargs,"DESC")
-        listNotes.clear()
+
         if(cursor.moveToFirst()){
             do{
                 val id=cursor.getInt(cursor.getColumnIndex("Id"))
@@ -61,8 +64,9 @@ class MainActivity : AppCompatActivity() {
 
         sv.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                Toast.makeText(applicationContext,p0,Toast.LENGTH_LONG).show()
+
                 LoadQuery("%"+p0+"%")
+                Toast.makeText(applicationContext,p0,Toast.LENGTH_LONG).show()
                 return false
             }
 
@@ -107,6 +111,14 @@ class MainActivity : AppCompatActivity() {
                 LoadQuery("%")
 
             })
+            myView.editbtn.setOnClickListener(object :View.OnClickListener{
+                override fun onClick(p0: View?) {
+                    editUpdate(myNote)
+                }
+
+            })
+
+
             return myView
         }
 
@@ -123,4 +135,13 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    fun editUpdate(notes:Note){
+        var intent=Intent(this,AddNotes::class.java)
+        intent.putExtra("Id",notes.noteId)
+        intent.putExtra("Title",notes.noteName)
+        intent.putExtra("Description",notes.noteDes)
+        startActivity(intent)
+            }
+
 }
